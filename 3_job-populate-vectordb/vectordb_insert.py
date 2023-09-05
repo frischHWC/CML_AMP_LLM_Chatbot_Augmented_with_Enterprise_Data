@@ -2,6 +2,11 @@ from milvus import default_server
 from pymilvus import connections, FieldSchema, CollectionSchema, DataType, Collection, utility
 import subprocess
 
+from langchain.document_loaders import PyPDFLoader
+from langchain.document_loaders import DirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders import TextLoader
+
 import utils.model_embedding_utils as model_embedding
 
 import os
@@ -13,7 +18,8 @@ def create_milvus_collection(collection_name, dim):
 
       fields = [
       FieldSchema(name='relativefilepath', dtype=DataType.VARCHAR, description='file path relative to root directory ', max_length=1000, is_primary=True, auto_id=False),
-      FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='embedding vectors', dim=dim)
+      FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='embedding vectors', dim=dim),    
+      FieldSchema(name='text', dtype=DataType.VARCHAR, description='original text', max_length=15000, is_primary=False, auto_id=False)    
       ]
       schema = CollectionSchema(fields=fields, description='reverse image search')
       collection = Collection(name=collection_name, schema=schema)
@@ -28,10 +34,12 @@ def create_milvus_collection(collection_name, dim):
       return collection
     
 # Create an embedding for given text/doc and insert it into Milvus Vector DB
-def insert_embedding(collection, id_path, text):
+def insert_embedding(collection, id_path, text, original_text):
     embedding =  model_embedding.get_embeddings(text)
-    data = [[id_path], [embedding]]
+    data = [[id_path], [embedding], [original_text]]
     collection.insert(data)
+    
+
     
 def main():
   # Reset the vector database files
@@ -57,7 +65,25 @@ def main():
         with open(file, "r") as f: # Open file in read mode
             print("Generating embeddings for: %s" % file.name)
             text = f.read()
-            insert_embedding(collection, os.path.abspath(file), text)
+            insert_embedding(collection, os.path.abspath(file), text, text)
+    
+    for file in Path(doc_dir).glob(f'**/*.pdf'):
+        loader = PyPDFLoader(str(file))
+        documents = loader.load()
+        for i in range(len(documents)):
+            documents[i].page_content = documents[i].page_content.replace('\t', ' ')\
+                                                         .replace('\n', ' ')\
+                                                         .replace('       ', ' ')\
+                                                         .replace('      ', ' ')\
+                                                         .replace('     ', ' ')\
+                                                         .replace('    ', ' ')\
+                                                         .replace('   ', ' ')\
+                                                         .replace('  ', ' ')
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        texts = text_splitter.split_documents(documents)
+        for doc in documents:
+        #Insert embedding function needs files in a different format. Might need to write a new function to take documents as provided above
+            insert_embedding(collection, os.path.abspath(doc.metadata["source"]), doc.page_content, doc.page_content)
 
     collection.flush()
     print('Total number of inserted embeddings is {}.'.format(collection.num_entities))
