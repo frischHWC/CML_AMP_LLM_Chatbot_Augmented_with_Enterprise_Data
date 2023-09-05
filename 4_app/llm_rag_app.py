@@ -1,6 +1,6 @@
 import os
 import gradio
-
+import ast
 from milvus import default_server
 from pymilvus import connections, Collection
 import utils.model_llm_utils as model_llm
@@ -69,15 +69,23 @@ def get_nearest_chunk_from_vectordb(vector_db_collection, question):
         param=vector_db_search_params,
         limit=1, # limit results to 1
         expr=None, 
-        output_fields=['relativefilepath'], # The fields you want to retrieve from the search result.
+        output_fields=['text'], # The fields you want to retrieve from the search result.
         consistency_level="Strong"
     )
     
     # Print the file path of the kb chunk
     print(nearest_vectors[0].ids[0])
+    dict_part = str(nearest_vectors[0]).split("entity: ")[1].rstrip('"]')
+    print(dict_part)
+    entity_dict = ast.literal_eval(dict_part)
+
+    # Extracting the text value
+    text_value = entity_dict['text']
+    print(text_value)
+
     
     # Return text of the nearest knowledgebase chunk
-    return load_context_chunk_from_data(nearest_vectors[0].ids[0])
+    return text_value
   
 # Return the Knowledge Base doc based on Knowledge Base ID (relative file path)
 def load_context_chunk_from_data(id_path):
