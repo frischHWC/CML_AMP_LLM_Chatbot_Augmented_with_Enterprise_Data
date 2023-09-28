@@ -3,8 +3,8 @@
 EMBEDDING_MODEL_REPO="https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2"
 EMBDEDDING_MODEL_COMMIT="9e16800aed25dbd1a96dfa6949c68c4d81d5dded"
 
-LLM_MODEL_REPO="https://huggingface.co/h2oai/h2ogpt-oig-oasst1-512-6.9b"
-LLM_MODEL_COMMIT="4e336d947ee37d99f2af735d11c4a863c74f8541"
+LLM_MODEL_REPO="https://huggingface.co/Cedille/fr-boris"
+LLM_MODEL_COMMIT="cb981d4d03b87647b25b7627868bde76420719f9"
 
 
 download_lfs_files () {
