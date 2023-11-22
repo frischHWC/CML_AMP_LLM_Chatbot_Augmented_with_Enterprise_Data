@@ -18,16 +18,20 @@ mkdir models
 cd models
 
 # Downloading model for generating vector embeddings
-GIT_LFS_SKIP_SMUDGE=1 git clone ${EMBEDDING_MODEL_REPO} --branch ${EMBEDDING_MODEL_BRANCH} embedding-model 
+GIT_LFS_SKIP_SMUDGE=1 
+git clone ${EMBEDDING_MODEL_REPO} embedding-model 
 cd embedding-model
+git checkout ${EMBEDDING_MODEL_BRANCH}
 # You must provide ALL urls of .lfs files (examples are provided below)
 curl -O -L "https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2/resolve/main/pytorch_model.bin?download=true"
 echo "Finished download of LFS file for embedding-model"
 cd ..
   
 # Downloading LLM model that has been fine tuned to handle instructions/q&a
-GIT_LFS_SKIP_SMUDGE=1 git clone ${LLM_MODEL_REPO} --branch ${LLM_MODEL_BRANCH} llm-model
+GIT_LFS_SKIP_SMUDGE=1 
+git clone ${LLM_MODEL_REPO} llm-model
 cd llm-model
+git checkout ${LLM_MODEL_BRANCH}
 # You must provide ALL urls of .lfs files (examples are provided below)
 curl -O -L "https://raw.githubusercontent.com/frischHWC/cml-amp-llm-models-repo/master/pymodel.bin"
 echo "Finished download of LFS file for llm-model"
