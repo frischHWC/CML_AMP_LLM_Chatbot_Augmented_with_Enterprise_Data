@@ -13,6 +13,22 @@ runtimes:
     edition: Nvidia GPU
 
 tasks:
+  - type: create_job
+    name: Download Models
+    entity_label: download_data_and_models
+    script: 2_job-download-models/download_models.py
+    arguments: None
+    short_summary: Create job to download pre-trained models. 
+    long_summary: Create job to download open source pre-trained models required by the LLM Chatbot application. All models are downloaded to a local directory. 
+    cpu: 1
+    memory: 4
+    environment:
+      TASK_TYPE: CREATE/RUN_JOB
+
+  - type: run_job
+    entity_label: download_data_and_models
+    short_summary: Run job to download pre-trained models.
+
   - type: run_session
     name: Validate GPU Availibility
     script: 0_session-resource-validation/check_gpu_resources.py
@@ -39,22 +55,6 @@ tasks:
     kernel: python3
     cpu: 2
     memory: 8
-
-  - type: create_job
-    name: Download Models
-    entity_label: download_data_and_models
-    script: 2_job-download-models/download_models.py
-    arguments: None
-    short_summary: Create job to download pre-trained models. 
-    long_summary: Create job to download open source pre-trained models required by the LLM Chatbot application. All models are downloaded to a local directory. 
-    cpu: 1
-    memory: 4
-    environment:
-      TASK_TYPE: CREATE/RUN_JOB
-
-  - type: run_job
-    entity_label: download_data_and_models
-    short_summary: Run job to download pre-trained models.
     
   - type: create_job
     name: Populate Vector DB with documents embeddings
