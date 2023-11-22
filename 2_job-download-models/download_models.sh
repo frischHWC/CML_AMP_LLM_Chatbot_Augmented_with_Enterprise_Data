@@ -8,9 +8,9 @@ LLM_MODEL_REPO="https://huggingface.co/h2oai/h2ogpt-oig-oasst1-512-6.9b"
 LLM_MODEL_BRANCH="main"
 
 # Optional get identity of git servers (add yours here)
+mkdir -p ~/.ssh/
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 ssh-keyscan huggingface.co  >> ~/.ssh/known_hosts
-
 
 # Clear out any existing checked out models
 rm -rf ./models
@@ -21,7 +21,7 @@ cd models
 GIT_LFS_SKIP_SMUDGE=1 git clone ${EMBEDDING_MODEL_REPO} --branch ${EMBEDDING_MODEL_BRANCH} embedding-model 
 cd embedding-model
 # You must provide ALL urls of .lfs files (examples are provided below)
-curl -O -L "https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2/resolve/main/pytorch_model.bin\?download\=true"
+curl -O -L "https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2/resolve/main/pytorch_model.bin?download=true"
 echo "Finished download of LFS file for embedding-model"
 cd ..
   
