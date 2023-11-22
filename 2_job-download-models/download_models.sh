@@ -18,7 +18,7 @@ mkdir models
 cd models
 
 # Downloading model for generating vector embeddings
-GIT_LFS_SKIP_SMUDGE=1 git clone ${EMBEDDING_MODEL_REPO} embedding-model 
+GIT_LFS_SKIP_SMUDGE=1 git clone ${EMBEDDING_MODEL_REPO} -b ${EMBEDDING_MODEL_BRANCH} embedding-model 
 cd embedding-model
 git checkout ${EMBEDDING_MODEL_BRANCH}
 # You must provide ALL urls of .lfs files (examples are provided below)
@@ -27,7 +27,7 @@ echo "Finished download of LFS file for embedding-model"
 cd ..
   
 # Downloading LLM model that has been fine tuned to handle instructions/q&a
-GIT_LFS_SKIP_SMUDGE=1 git clone ${LLM_MODEL_REPO} llm-model
+GIT_LFS_SKIP_SMUDGE=1 git clone ${LLM_MODEL_REPO} -b ${LLM_MODEL_BRANCH} llm-model
 cd llm-model
 git checkout ${LLM_MODEL_BRANCH}
 # You must provide ALL urls of .lfs files (examples are provided below)
